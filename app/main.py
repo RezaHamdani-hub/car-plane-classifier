@@ -9,7 +9,9 @@ import io
 app = FastAPI(title="Car vs Plane Classifier")
 
 # Static files (frontend UI) 
-app.mount("/static", StaticFiles(directory="app/static"), name="static")
+import os
+STATIC_DIR = "app/static" if os.path.exists("app/static") else "static"
+app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
 # Load model once at startup 
 MODEL_PATH = "model/classifier.keras"
@@ -22,7 +24,8 @@ CLASS_NAMES = {0: "airplane", 1: "car"}
 
 @app.get("/")
 def root():
-    return FileResponse("app/static/index.html")
+    html = STATIC_DIR + "/index.html"
+    return FileResponse(html)
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
