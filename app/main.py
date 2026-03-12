@@ -1,11 +1,15 @@
 from fastapi import FastAPI, File, UploadFile
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, FileResponse
+from fastapi.staticfiles import StaticFiles
 import tensorflow as tf
 import numpy as np
 from PIL import Image
 import io
 
-app = FastAPI(title="Car vs Plane Classifier 🚀")
+app = FastAPI(title="Car vs Plane Classifier")
+
+# Static files (frontend UI) 
+app.mount("/static", StaticFiles(directory="app/static"), name="static")
 
 # Load model once at startup 
 MODEL_PATH = "model/classifier.keras"
@@ -18,10 +22,7 @@ CLASS_NAMES = {0: "airplane", 1: "car"}
 
 @app.get("/")
 def root():
-    return {
-        "message": "Car vs Plane Classifier API is running 🚀",
-        "usage": "POST /predict with an image file"
-    }
+    return FileResponse("app/static/index.html")
 
 @app.post("/predict")
 async def predict(file: UploadFile = File(...)):
